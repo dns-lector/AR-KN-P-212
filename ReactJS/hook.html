@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Hooks</title>
+</head>
+<body>
+    <h1>Функціональні компоненти. Хуки</h1>
+    <p>
+        Хуки - збиральна назва для технологій, які передають функцію/метод 
+        одного учасника інформаційного обміну для виклику іншому учаснику. 
+        Від англ. hook - гак (крюк) - задає образ взаємодії, коли робота 
+        одного об'єкта передається іншому та повертається назад. 
+    </p>
+    <p>
+        Поширені технології хуків:
+        <b>системні хуки</b> - "втручання" у системний процес оброблення повідомлень 
+        OS--handler &rarr; OS-(наш обробник)-handler
+        <b>веб-хуки</b> - передача іншому серверу нашої адреси для того щоб він 
+        передав нам результати своєї роботи. Використовується у платіжних 
+        системах: наш сайт формує суму платежу та переспрямовує користувача на 
+        сайт банку (передаючи свою адресу). Банк, провівши платіж, надсилає 
+        запит на нашу адресу, передаючи результат операції. 
+    </p>
+    <p>
+        React-хуки - технологія, що приходить за заміну технології setState 
+        при переході до функціональних компонентів. 
+    </p>
+    <container></container>
+
+    <script src="lib/react.development.js"></script>
+    <script src="lib/react-dom.development.js"></script>
+    <script src="lib/babel.7.24.min.js"></script>
+    <script type="text/babel">
+        /* На зміну класам приходять функції. Це
+           + спрощує синтаксис (не треба оголошення конструктора, приставок this. тощо)
+           + покращує інкапсуляцію (всі локальні змінні суть private, недоступні ззовні)
+           - прибирає спадкування і, як наслідок, доступ до setState
+           - перезапуск ф-ції при перерисовуванні заново виконує присвоювання змінних
+           */
+        function Container() {
+            // isLcVisible - показувати чи ні компонент <LifeCycle />
+            let [isLcVisible, setLcVisible] = React.useState(true);
+            let [lcCount, setLcCount] = React.useState(1);  // лічильник показів <LifeCycle />
+
+            // функція (onclick), що змінює isLcVisible на протилежний та рахує кількість змін
+            const toggleVisibility = () => {
+                if(! isLcVisible) {  // рахуємо лише покази (зникнення не рахуємо)
+                    setLcCount(lcCount + 1);
+                }
+                setLcVisible( ! isLcVisible ) ;
+            }
+
+            // { isLcVisible && <LifeCycle /> } - умовна верстка: true - показує, false - ні
+            // <LifeCycle counter={lcCount} />  -- дані лічильника передаємо props-ами
+            return <>
+                <HooksBasics /><br/>
+                <button onClick={toggleVisibility}>Toggle LifeCycle</button>
+                { isLcVisible && <LifeCycle counter={lcCount} /> }
+                <RouterWidget />
+            </> ;
+        }
+
+        function HooksBasics() {
+            // звичайна локальна змінна, присвоювання з кожним перезапуском
+            var x = 10;
+
+            // хук-стан: пара[змінна, функція-сеттер], які контролюються Реактом
+            // ми маємо не самі змінні, а посилання на них -- з перезапуском не міняються
+            let [exc, setExc] = React.useState("!");        // "!" - початкове значення для exc
+            let [isGrow, setGrow] = React.useState(false);  // хуків може бути довільна кількість
+
+            const addExc = () => {   // локальна ф-ція (замість методу), нотація "=>" дає захват околу (зокрема exc)
+                setExc( isGrow       // зміна значення - аналог setState
+                    ? exc + "!"
+                    : exc.substring(1) );
+                x++;                 // дія не матиме ефекта, оскільки перезапуск відновить var x = 10;
+                // console.log(exc, x); exc не з актуальним значенням (setExc - асинхронна)
+            };
+
+            // В силу асинхронності зміни стану (хуків-станів), для того щоб мати доступ до 
+            // актуальних значень стану використовуються хуки-ефекти
+            React.useEffect(   // створення хуку
+                () => {        // перший аргумент - функція, що буде виконуватись
+                    console.log(exc);
+                    if( exc.length == 1 || exc.length == 3 ) {
+                        setGrow( ! isGrow ) ;
+                    }
+                },             // другий аргумент - масив змінних, що спостерігаються (їх зміни 
+                [exc]          // призведуть до виклику ефекту)                               
+            );
+            // задача: змінювати кількість "!" від 1 до 3 і назад: ! - !! - !!! - !! - ! - !! - !!! -...
+            return <b onClick={addExc}>Functional Component with x = {x} {exc}</b> ;
+        }
+
+        function LifeCycle(props) {
+            /* хуки-ефекти дозволяють відстежувати події життєвого циклу компонента
+               з яких найбільш вживаними є події додавання (Mount) та вилучення (UnMount)
+               компонента у дереві DOM.
+               Для спостережння за цими подіями створюється ефект з порожнім переліком
+               змінних, що наглядуються */
+            React.useEffect(
+                () => {   // функція, що передається, буде виконана коли компонент вмонтовано
+                    console.log("Component Mounted");
+                    return () => {   // функція, що повертається - коли демонтовано
+                        console.log("Component UnMounted");
+                    }
+                },
+                []    // порожній перелік - моніторинг подій життєвого циклу компонента
+            )
+            return <h2>LifeCycle Works (Mounted {props.counter} times)</h2> ;
+        }
+
+        function RouterWidget(props) {
+            /* Одна з технологій маршрутизації в SPA проєктах - використання hash-частини URL,
+            зміна якої не призводить до перезавантаження сторінки, але створює подію (hashchange)
+            в об'єкті window. Це дозволяє підписатись на слухання цієї події та підбирати 
+            компонент, що відповідає за дану "адресу"
+            */
+            let [hash, setHash] = React.useState(window.location.hash);
+            const onHashChanged = () => {  // "слухач" події зміни хешу
+                // передаємо хеш вікна до внутрішного стану та оновлюємо його хуком
+                setHash(window.location.hash);
+            };
+            React.useEffect(() => {  // для підписки "слухача" використовується хук-ефект життєвого циклу                
+                    window.addEventListener('hashchange', onHashChanged);
+                    return () => {   // !! Обов'язково - при зникненні компонента необхідно 
+                                     // відписуватись від усіх підписок
+                        window.removeEventListener('hashchange', onHashChanged);
+                    }
+                }, []   // !! Не забувати []
+            );
+
+            const routes = {
+                '#/home': <b>Це домашня сторінка</b>,
+                '#/shop': <i>Це магазин сайту</i>,
+                '#/cart': <u>Це кошик споживача</u>,
+                '#/rates': <NbuRates />
+            };
+
+            return <div>
+                <h2>Router Widget</h2>
+                <a href="#/home">Домашня</a>  &emsp;
+                <a href="#/shop">Магазин</a>  &emsp;
+                <a href="#/cart">Кошик</a>    &emsp; 
+                <a href="#/rates">Курс НБУ</a>&emsp; 
+                <a href="#/404">404</a>       &emsp; <br />
+                { routes[hash] ?? <b>404<s>не знайдено</s></b>  }
+            </div> ;
+        }
+
+        function NbuRates(props) {
+            const url = "https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?date=20240412&json";
+            let [rates, setRates] = React.useState( [] );
+            // запити НТТР також рекомендується робити коли компонент вмонтований
+            React.useEffect(()=>{   // тільки монтаж, демонтаж не цікавить (немає return () => { ... })
+                fetch(url)                 // React не має власної заміни на кшталт $http/HttpClient
+                .then(r => r.json())       // і використовує звичайний fetch
+                .then(j => setRates(j));   // j (від НБУ) це вже масив, переносимо його до rates через хук
+            }, []);
+            return <>
+                <h3>Курси валют НБУ</h3>
+                { rates.map( r => <p key={r.cc}>{r.txt}</p> ) }
+            </>;
+        }
+        ReactDOM
+        .createRoot( document.querySelector('container') )
+        .render(<Container />);
+    </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+.container {
+    display: flex;
+}
+.left-block {
+    flex: 1;
+}
+.right-block {
+    background-color: #f7f7f7;
+    border: 2px solid lightgrey;
+    flex: 1;
+    min-height: 50vh;
+}
+.right-block h2 {
+    text-align: center;
+}
+.right-block p {
+    font-size: large;
+    padding-left: 10px;
+}

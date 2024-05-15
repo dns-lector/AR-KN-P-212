@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="mainApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angular Directives</title>
+</head>
+<body>
+    <h1>Директиви в AngularJS</h1>
+    <p>
+        Директиви є продовженням ідеї контролерів з точки зору 
+        утворення локальних околів у бік інкапсуляції розмітки
+        (включення до себе HTML частини). Загальна концепція не
+        змінюється - якийсь блок HTML помічається таким, що 
+        призначений для директиви, але він не обов'язково містить
+        власну розмітку, оскільки в нього буде впроваджена
+        (transclude) розмітка директиви.
+    </p>
+    <p>Директиви впроваджуються одним з наступних способів:</p>
+    <ul>
+        <li>Через атрибут довільного тегу 
+            (<code>&lt;div directive1>&lt;/div></code>)
+        </li>
+        <li>Через клас (<code>&lt;div class="directive2">&lt;/div></code>)</li>
+        <li>Через тег - найбільш поширений спосіб 
+            (<code>&lt;directive3>&lt;/directive3></code>)</li>
+        <li>Через коментар
+            (<code>&lt;!-- directive:directive4 --&gt;</code>)
+        </li>
+        <li>Комбінованим способом (restrict: "ACE")</li>
+    </ul>
+    <div directive1></div> <!-- <div directive1><b>Я директива 1</b></div>    replace:false -- контейнер залишається -->
+    <div class="directive2"></div>
+    <directive3></directive3> <!--replace:true  directive3 зникає, її template cтає замість неї  -->
+    <directive3></directive3>
+    <!-- directive:directive4 -->
+
+    <h2>Передача даних з DOM</h2>
+    <p>
+        Директиви значно легше, ніж контролери, дублюються оскільки містять
+        у собі все необхідне. Але при дублюванні часто виникає потреба у 
+        відмінностях між копіями директив. 
+    </p>
+    <calc initial="10" step="1"></calc>
+    <calc initial="20" step="2"></calc>
+
+    Д.З. Реалізувати попереднє ДЗ "світлофор" у вигляді директиви. 
+    Створити декілька копій світлофору, переконатись у їх незалежній роботі. 
+    
+    <script src="angular.min.js"></script>
+    <script src="directive.js"></script>
+</body>
+</html>

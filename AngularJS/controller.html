@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="mainApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angular Controllers</title>
+</head>
+<body>
+    <h1>Контролери в AngularJS</h1>
+    <p>
+        В AngularJS контролери - це утворення, які створюють локальну
+        область "глобалізації" (лексикографічний окіл) - scope. 
+    </p>
+    <p>
+        Впровадження контролерів. 
+    </p>
+    <ul>
+        <li>Модуль (частина застосунку, помічена атрибутом <code>ng-app</code>)
+            має бути іменованим. Іншими словами, атрибуту надається значення
+            <code>ng-app="mainApp"</code>
+        </li>
+        <li>Додаємо скрипт, у якому ініціалізуємо модуль та створюємо
+            у ньому контролер(и)
+        </li>
+        <li>Помічаємо блок HTML атрибутом <code>ng-controller</code>, у
+            межах цього блоку буде доступ до даних, закладених у 
+            лексикографічний окіл ($scope) контролера.
+        </li>
+    </ul>
+    <div ng-controller="mainController">
+        Цей блок працює під управлінням "mainController", тому має доступ
+        до його даних, зокрема, data1 = <i>{{data1}}</i><br/>
+        <button ng-click="addExclamation()">Додати знак оклику</button>
+    </div>
+    <p>
+        Цей блок поза контролером, тут звернення до даних дає: data1 = <i>{{data1}}</i>
+    </p>
+    <div ng-controller="secondController">
+        Цей блок працює під управлінням "secondController", тому має доступ
+        до його даних, зокрема, data1 = <i>{{data1}}</i>
+    </div>
+
+    <div ng-controller="calcController">
+        <button style="pointer-events: {{num == 5 ? 'none' : 'auto'}};"  ng-click="dec()">--</button> <b style="font-size: {{2*num}}px;">{{num}}</b> <button ng-click="inc()">++</button>
+        <div ng-if="num == 15">Це максимальне значення</div>
+    </div>
+
+    Д.З. Реалізувати задачу "Світлофор" засобами AngularJS
+    або) одна кнопка, яка почергово перемикає режими
+    або) три-п'ять кнопок, які включають відповідні режими
+
+
+    <script src="angular.min.js"></script>
+    <script src="controller.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" ng-app>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angular JS</title>
+    <script src="angular.min.js"></script>
+    <link rel="stylesheet" href="order.css"/>
+</head>
+<body>
+    <h1>Замовлення на створення сайту (brief)</h1>
+    <div class="container">
+        <div class="left-block">
+            Назва замовлення: <input ng-model="orderTitle"/><br/>
+            Тип сайту: <select ng-model="orderType">
+                <option>Сайт-візитівка</option>
+                <option>Landing page</option>
+                <option>Магазин</option>
+                <option>Форум</option>
+                <option>Блог</option>
+            </select>
+            <br/>
+            <label><input type="checkbox" ng-model="needMap" />
+                Необхідність картографії (катри з розміщенням офісів)</label>
+            <br/>
+            Хостинг: 
+            <label><input type="radio" name="host" ng-model="hosting" value="MS Azure"/>Azure </label>  
+            <label><input type="radio" name="host" ng-model="hosting" value="Amazon AWS"/>AWS </label>  <br/>
+            <br/>
+            Бажаний колір: <input type="color" ng-model="siteColor" />
+        </div>
+        <div class="right-block">
+            <h2>{{orderTitle ? orderTitle : 'Без назви'}}</h2>
+            <p>Бріф на розроблення сайту типу <b>'{{orderType}}'</b></p>
+            <p>Потреба у картографії: <b>{{needMap ? 'так' : 'ні'}}</b></p>
+            <p>Сервери розміщення сайту: <b>{{hosting}}</b></p>
+            <p>Основний колір: {{siteColor}}</p>
+            <div style="background-color:{{siteColor}}; width:50px; height: 20px"></div>
+        </div>
+    </div>
+</body>
+</html>
+Д.З. Засобами Angular моделей створити "генератор" студентського квитка
+Користувач вводить ПІБ, групу, рік вступу, вибирає спеціальність з переліку
+Система формує "картку" з логотипом університету та введеними даними

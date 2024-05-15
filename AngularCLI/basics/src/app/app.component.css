@@ -1,0 +1,31 @@
+footer {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
+    padding: 10px 20px;
+}
+
+.calc {
+    border: 1px solid gray;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+}
+.calc button {
+    border: none;
+    border-radius: 15px;
+    background: linear-gradient(yellow, gold);
+    color: blue;
+    font-size: large;
+    font-weight: 700;
+    font-family: monospace;
+    padding: 7px 10px;
+}
+.calc b {
+    font-weight: 700;
+    font-family: monospace;
+    min-width: 30px;
+    display: inline-block;
+    text-align: center;
+}

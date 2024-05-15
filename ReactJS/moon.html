@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Hooks</title>
+</head>
+<body>
+    <container></container>
+
+    <script src="lib/react.development.js"></script>
+    <script src="lib/react-dom.development.js"></script>
+    <script src="lib/babel.7.24.min.js"></script>
+    <script type="text/babel">
+        function MoonWidget(props) {
+            const url = "https://www.icalendar37.net/lunar/api/?year=[year]&month=[month]&shadeColor=gray&size=150&texturize=true&day=10";
+            let [html, setHtml] = React.useState({ __html: "<b>Hello</b>" });
+            let [svg,  setSvg ] = React.useState({ __html: "" });
+            let [date, setDate] = React.useState(new Date());
+            let [phases, setPhases] = React.useState({});
+            // хук-посилання дозволяє створювати змінну, значення якої не стирається при перезапусках
+            const dateRef = React.useRef(new Date('1900-01-01'));
+
+            React.useEffect(()=>{
+                // При завантаженні даних приходить інформація за місяць (30-31 день)
+                // задача: якщо нова вибрана дата у тому ж місяці, що й попередня, то немає
+                // потреби повторно завантажувати дані, можна вибрати іншу SVG з наявного набору
+                // проблема: зберігати попередню дату за умови, що локальні змінні ф-ції оновлюються
+                // dateRef.current - попередня дата, date - поточна
+                if(date.getYear() == dateRef.current.getYear() && 
+                    date.getMonth() == dateRef.current.getMonth()) {
+                        // той саме рік та місяць - не треба повторного запиту
+                        setSvg({ __html: phases[date.getDate()].svg });
+                }
+                else {
+                    // потрібен запит
+                    setSvg({ __html: "<img src='Loading_icon.gif' />" });
+                    setTimeout(() => {
+                        fetch(url
+                            .replace("[year]", date.getFullYear())
+                            .replace("[month]", date.getMonth() + 1))
+                        .then(r => r.json())
+                        .then(j => {
+                            setSvg({ __html: j.phase[date.getDate()].svg });
+                            setPhases(j.phase);
+                        });
+                    }, 2000);
+                }
+                dateRef.current = date;  // поточна дата стає попередньою
+            }, [date]);
+            
+            const tagChange = e => setHtml({__html: `<${e.target.value}>Hello</${e.target.value}>`}) ;
+            const dateChange = e => setDate( new Date(e.target.value) ) ;
+            return <>
+                <h1>Робота з HTML: динамічне формування та завантаження</h1>
+                <div dangerouslySetInnerHTML={html}></div>
+                <select onChange={tagChange}>
+                    <option value="b">&lt;b&gt;</option>
+                    <option value="u">&lt;u&gt;</option>
+                    <option value="i">&lt;i&gt;</option>
+                    <option value="s">&lt;s&gt;</option>
+                </select>
+                <h2>Фази місяця</h2>
+                <span>Виберіть дату: </span><input type="date" onChange={dateChange} defaultValue={date.toISOString().substr(0,10)} />
+                <div dangerouslySetInnerHTML={svg}></div>
+                {phases[date.getDate()] && <div>{phases[date.getDate()].phaseName}</div>}
+                {phases[date.getDate()] && <div>Відстань: {Math.round(phases[date.getDate()].dis * 10) / 10} км</div>}
+                {phases[date.getDate()] && <div>Освітленість: {Math.round(phases[date.getDate()].lighting * 10) / 10} %</div>}
+            </>;
+        }
+        ReactDOM
+        .createRoot( document.querySelector('container') )
+        .render(<MoonWidget />);
+        /* динамічне формування HTML
+        HTML контент впроваджується через атрибут dangerouslySetInnerHTML
+        Якщо зазначається цей атрибут, то дочірніх елементів (контенту) не повинно бути
+           [Error: Can only set one of `children` or `props.dangerouslySetInnerHTML`]
+        До структури HTML також є вимоги 
+          [Error: `props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`]
+        це не просто рядок з HTML, а об'єкт з полем __html
+        */
+    </script>
+</body>
+</html>

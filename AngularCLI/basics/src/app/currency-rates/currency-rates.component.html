@@ -1,0 +1,17 @@
+<h1>{{title}}</h1>
+@for(hash of hashes; track hash) {
+    <p>{{hash.input}} -- {{hash.digest}}</p>
+}
+<h1>Курс валют за даними НБУ</h1>
+@if(rates.length > 0) {
+    <input [formControl]="searchControl" (ngModelChange)="searchClick()" />
+    <button (click)="searchClick()">Q</button>
+}
+@for(rate of shownRates; track rate.cc) {
+    <p>{{rate.txt}}</p>
+}
+Д.З. Додати до реактивної форми декілька різнотипних 
+елементів: радіокнопки, чекбокс, вибір дати (далі за бажанням)
+Забезпечити передачу цих даних на бекенд (ASP), переконатись
+у їх надходженні. Додати валідацію та повідомлення при її 
+порушенні. 

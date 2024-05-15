@@ -1,0 +1,21 @@
+.moon-container {
+    border: 2px solid gray;
+    display: inline-block;
+    padding: 7px 10px;
+    text-align: center;
+}
+.day-name {
+    font-weight: 800;
+    text-align: center;
+}
+.widget-date,
+.widget-month,
+.widget-year {
+    display: inline-block;
+}
+.widget-origin {
+    color: gray;
+    font-size: small;
+    margin-top: 10px;
+    text-align: end;
+}

@@ -1,0 +1,12 @@
+<div class="traffic">
+    <div class="lamp" [class.red]="state == 0 || state == 1"></div>
+    <div class="lamp" [class.yellow]="state == 1 || state == 3"></div>
+    <div class="lamp" [class.green]="state == 2"></div>
+    <button (click)="nextState()">Наступний</button>
+    <div class="switch">
+        <button>1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>4</button>
+    </div>
+</div>

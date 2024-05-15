@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Intro</title>
+</head>
+<body>
+    <h1>Вступ до React JS</h1>
+    <p>
+        React - бібліотека JS, призначена для задач фронт-енд розробки. 
+        У порівнянні з Angular, який є фреймворком, у React значно більше 
+        засобів походить від JS та DOM/BOM. Однією з фундаментальних 
+        відмінностей React є його базовий розподіл на два модулі:
+        модуль описування компонентів та модуль їх впровадження. 
+        Такий розподіл дозволяє використовувати універсально описані 
+        компоненти для впровадження у різні платформи - веб, мобільні, 
+        десктопні тощо. 
+    </p>
+    <p>
+        Існує два різновити React - 
+        <a href="https://legacy.reactjs.org/">React JS</a> - бібліотека 
+        для підключення як скрипт до сторінки та 
+        <a href="https://react.dev/">React CLI</a> - інструментарій 
+        командного рядку для збирання великих проєктів. 
+    </p>
+    <h2>Встановлення React JS</h2>
+    <p>
+        Для початку роботи з React необхідно підключити два скрипти. 
+        З метою покращення автономності роботи ці скрипти можна зберігти 
+        локально. 
+    </p>
+    <ul>
+        <li>https://unpkg.com/react@18/umd/react.development.js - 
+            набір засобів для опису компонентів
+        </li>
+        <li>https://unpkg.com/react-dom@18/umd/react-dom.development.js - 
+            для їх впровадження у DOM
+        </li>
+    </ul>
+    <p>
+        Місце підключення скриптів не грає ролі, але грає роль порядок
+        їх підключення: спочатку react, потім react-dom. Частина у назві 
+        скриптів "development" свідчить про те, що це версії для етапу
+        розроблення. Такі скрипти більші за розміром і містять покращену 
+        систему повідомлення про помилки. Коли проєкт здається, то ці 
+        скрипти слід замінити на react.production.min.js / react-dom.production.min.js
+    </p>
+    <div id="component-1"></div>
+    <div id="component-2"></div>
+    <div id="component-3"></div>
+
+    <script src="lib/react.development.js"></script>
+    <script src="lib/react-dom.development.js"></script>
+    <!-- власні скрипти розміщуємо після React -->
+    <script>
+        class Component1 extends React.Component {  // Ідея - компонентна, окіл забезпечується тим,
+            render() {                              // що компонент є класом. Замість template
+                return React.createElement(         // вживається метод render(), який є необхідним
+                    'b',                            // і задає відображення компонента.
+                    {style: { color: 'fuchsia'} },  // Його основа - React.createElement, що має 3
+                    "Hello, World!"                 // аргументи:
+                );                                  // 'b' - назва тега або класу-компонента
+            }                                       // {} - props (~attrs) - атрибути для тега
+        }                                           // "Hello, World!" - дочірній елемент
+        ReactDOM                                    // Впровадження компонента у DOM
+        .createRoot( document.getElementById("component-1") )
+        .render( React.createElement(Component1, {}, null ) );
+    </script>
+
+    <script>
+        class Component2 extends React.Component {
+            render() {
+                return React.createElement(
+                    'ul',
+                    {},
+                    React.createElement('li', {}, "Item 1"),   // дочірніх елементів
+                    React.createElement('li', {}, "Item 2"),   // може бути довільна кількість
+                    React.createElement('li', {}, "Item 3"),   // їх можна зазначати через 
+                    React.createElement('ul', {},              // кому ...
+                    [
+                        React.createElement('li', {key:1}, "Item 4.1"),   // ... або масивом
+                        React.createElement('li', {key:2}, "Item 4.2"),   // Також довільною
+                        React.createElement('li', {key:3}, "Item 4.3"),   // може бути вкладеність
+                    ] )
+                );
+            }
+        }
+        ReactDOM 
+        .createRoot( document.getElementById("component-2") )
+        .render( React.createElement(Component2, {}, null ) );
+    </script>
+
+<script>
+    // У силу поширеності вживання виразу React.createElement для нього створюють псевдонім
+    const e = React.createElement;   // це скорочене посилання на ту ж функцію React.createElement
+    let arr = [ "Data 1", "Data 2", "Data 3", "Data 4", "Data 5" ];
+    class Component3 extends React.Component {
+        render() {  // замість @for/ng-repeat вживається arr.map
+            // щодо prop key - використання індексу допускається для незмінних колекцій
+            // return e( 'ul', {}, arr.map( (data, i) => e( 'li', {key:i}, data ) ) );
+
+            // при використанні у якості ключів самих даних слід бути певними, що 
+            // дані не повторюються, інакше однакові ключі - це так само warning
+            return e( 'ul', {}, arr.map( data => e( 'li', {key:data}, data ) ) );
+            // Це можна сприймати як вимогу до бекенду включати у дані їх ідентифікатори
+        }
+    }
+    ReactDOM 
+    .createRoot( document.getElementById("component-3") )
+    .render( e(Component3, {}, null ) );
+</script>
+Д.З. Засобами React вивести дані з масиву 
+let arr = [ "Data A", "Data B", "Data C", "Data D", "Data E" ];
+у вигляді HTML-таблиці
+№  Дані
+1  Data A
+2  Data B
+...
+
+</body>
+</html>

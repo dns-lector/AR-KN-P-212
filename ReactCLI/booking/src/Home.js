@@ -19,6 +19,16 @@ function reducer(state, action) {
         categories: action.payload
       };
     }
+    case 'deleteCategory': {   // action.payload -- id to delete
+      let newState = {...state};
+      newState.categories.find(c => c.id == action.payload).deletedDt = new Date().toDateString();
+      return newState;
+    } 
+    case 'restoreCategory': {   // action.payload -- id to restore
+      let newState = {...state};
+      newState.categories.find(c => c.id == action.payload).deletedDt = null;
+      return newState;
+    } 
   }
 }
 
@@ -41,14 +51,17 @@ function Home() {
     })
     .then(r => r.json())
     .then(j => dispatch({ type: 'loadCategories', payload: j }));
+  }); 
+
+  const editCardClick = useCallback( (category) => {
+    console.log(category);
   });
-  
-  
+
   return (
     <div className="Home">
       <h1>Home</h1>
       <div className="row row-cols-1 row-cols-md-3 g-4">
-        {state.categories.map(c => <CategoryCard category={c} key={c.id} />)}
+        {state.categories.map(c => <CategoryCard category={c} key={c.id} editCardClick={editCardClick} dispatch={dispatch} />)}
       </div>
       {user != null && user.role == "Admin" && <AdminCategoryForm reloadCategories={loadCategories} />}
     </div>
@@ -132,11 +145,44 @@ function AdminCategoryForm( props ) {
 }
 
 function CategoryCard(props) {
-  const { user } = useContext(UserContext);
+  const { user, token } = useContext(UserContext);
   /* Д.З. Реалізувати відображення дати видалення категорії (сутності Category)
      у людино-зрозумілому форматі.
      ** Використати "інтелектуальну" форму - якщо дата сьогодні, то виводити лише час,
         якщо минуло менше 10 днів, то виводити "4 дні тому", інакше - саму дату */
+  const delClick = useCallback( () => {
+    if (window.confirm("Ви підтверджуєте видалення категорії?")) {
+      fetch(`${apiPath}/${props.category.id}`, { 
+        method: 'DELETE',
+        headers: (token ? {'Authorization': `Bearer ${token.id}`} : {})
+      }).then(r => {
+          if (r.status < 400) {
+              props.dispatch({type: 'deleteCategory', payload: props.category.id});
+          }
+          else {
+              alert("Виникла помилка видалення");
+          }
+      })
+    }
+  });
+  const restoreClick = useCallback( () => {
+    if (window.confirm("Ви підтверджуєте відновлення категорії?")) {
+      fetch(`${apiPath}?id=${props.category.id}`, { 
+        method: 'RESTORE',
+        headers: (token ? {'Authorization': `Bearer ${token.id}`} : {})
+      }).then(r => {
+          if (r.status < 400) {
+              props.dispatch({type: 'restoreCategory', payload: props.category.id});
+          }
+          else {
+              alert("Виникла помилка відновлення");
+          }
+      })
+    }
+  });
+  const editClick = useCallback( () => {
+    props.editCardClick(props.category);
+  });
   return (<div className="col">
   <div className={"card  h-100 " + (props.category.deletedDt ? "card-deleted" : "")}>
       <Link to={"category/" + props.category.slug}>
@@ -152,21 +198,12 @@ function CategoryCard(props) {
 { user != null && user.role == "Admin" &&
     <div className="card-footer">
         { !!props.category.deletedDt &&
-            <button className="btn btn-outline-success"
-                data-type="restore-category"
-                data-category-id="@(Model.Id)" >Restore</button>
+            <button className="btn btn-outline-success" onClick={restoreClick}>Restore</button>
         }
         { !props.category.deletedDt &&
-            <button className="btn btn-outline-danger"
-                data-type="delete-category"
-                data-category-id="@(Model.Id)" >Del</button>
+            <button className="btn btn-outline-danger" onClick={delClick}>Del</button>
         } 
-        <button className="btn btn-outline-warning"
-                data-type="edit-category"
-                data-category-name="@(Model.Name)"
-                data-category-description="@(Model.Description)"
-                data-category-slug="@(Model.Slug)"
-                data-category-id="@(Model.Id)" >Edit</button>
+        <button className="btn btn-outline-warning" onClick={editClick}>Edit</button>
     </div>
 }
   </div>
